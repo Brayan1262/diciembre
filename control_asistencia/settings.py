@@ -85,52 +85,53 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'control_asistencia.wsgi.application'
 
-DB_LIVE=os.getenv("DB_LIVE")
-DATABASE_URL=os.getenv("DATABASE_URL")
+DB_LIVE = os.getenv("DB_LIVE")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+# Nota:
+# - Si existe DATABASE_URL (p.ej. Supabase), SIEMPRE intentamos usar Postgres.
+# - Si DATABASE_URL está mal formada, NO hacemos fallback silencioso a SQLite,
+#   porque en producción eso hace que la app "arranque" pero no use la BD real.
 USE_POSTGRES = str(DB_LIVE).lower() in ["1", "true", "yes"]
 
 if DATABASE_URL:
-    # Prefer DATABASE_URL when provided (e.g., Supabase)
     try:
         DATABASES = {
-            'default': dj_database_url.config(
-                default=DATABASE_URL,
-                conn_max_age=0,  # No mantener conexiones persistentes con pgbouncer
-                conn_health_checks=True,  # Verificar salud de conexiones
+            'default': dj_database_url.parse(
+                DATABASE_URL,
+                conn_max_age=0,  # recomendado con pgbouncer
+                conn_health_checks=True,
                 ssl_require=True,
             )
         }
-        # Optimización adicional para pgbouncer
-        DATABASES['default']['OPTIONS'] = {
-            'sslmode': 'require',
-            'connect_timeout': 10,
-            'options': '-c statement_timeout=30000'  # 30 segundos timeout
-        }
-    except Exception:
-        # Fall back to explicit variables if URL is invalid
-        if USE_POSTGRES:
-            DATABASES = {
-                'default': {
-                    'ENGINE': 'django.db.backends.postgresql',
-                    'NAME': os.getenv('DB_NAME'),
-                    'USER': os.getenv('DB_USER'),
-                    'PASSWORD': os.getenv('DB_PASSWORD'),
-                    'HOST': os.getenv('DB_HOST'),
-                    'PORT': os.getenv('DB_PORT'),
-                    'OPTIONS': {'sslmode': 'require'},
-                }
-            }
-        else:
-            DATABASES = {
-                'default': {
-                    'ENGINE': 'django.db.backends.sqlite3',
-                    'NAME': BASE_DIR / 'db.sqlite3',
-                }
-            }
+
+        # Ajustes extra solo si realmente es Postgres
+        if DATABASES['default'].get('ENGINE') == 'django.db.backends.postgresql':
+            DATABASES['default'].setdefault('OPTIONS', {})
+            DATABASES['default']['OPTIONS'].update({
+                'sslmode': 'require',
+                'connect_timeout': 10,
+                'options': '-c statement_timeout=30000',  # 30s
+            })
+    except Exception as e:
+        raise RuntimeError(
+            "DATABASE_URL está configurada pero no se pudo parsear. "
+            "Esto normalmente pasa cuando el usuario/contraseña tiene caracteres especiales "
+            "(ej: @, :, /) sin URL-encoding. Corrige DATABASE_URL en Railway/Supabase. "
+            f"Error: {e}"
+        )
+
 elif USE_POSTGRES:
+    # Postgres vía variables individuales (si no hay DATABASE_URL)
+    required = ['DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST', 'DB_PORT']
+    missing = [k for k in required if not os.getenv(k)]
+    if missing:
+        raise RuntimeError(
+            "DB_LIVE=True pero faltan variables de Postgres: " + ", ".join(missing)
+        )
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -142,7 +143,9 @@ elif USE_POSTGRES:
             'OPTIONS': {'sslmode': 'require'},
         }
     }
+
 else:
+    # Desarrollo local
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
