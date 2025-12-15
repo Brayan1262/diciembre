@@ -2,8 +2,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Página principal
-    path('', views.pagina_principal, name='pagina_principal'),
+    # Raíz: enviar directo al lector QR
+    path('', views.escanear_qr, name='root'),
+
+    # Página principal (se mantiene accesible en /inicio/)
+    path('inicio/', views.pagina_principal, name='pagina_principal'),
     
     # Paso previo: Control de Actividades (DESHABILITADO TEMPORALMENTE)
     # path('actividades/<int:empleado_id>/', views.control_actividades, name='control_actividades'),
