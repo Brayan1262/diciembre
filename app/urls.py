@@ -2,20 +2,17 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Raíz: enviar directo al lector QR
-    path('', views.escanear_qr, name='root'),
+    # Página principal
+    path('', views.pagina_principal, name='pagina_principal'),
 
-    # Página principal (se mantiene accesible en /inicio/)
-    path('inicio/', views.pagina_principal, name='pagina_principal'),
-    
     # Paso previo: Control de Actividades (DESHABILITADO TEMPORALMENTE)
     # path('actividades/<int:empleado_id>/', views.control_actividades, name='control_actividades'),
 
     # Sistema tradicional (mantenido para compatibilidad)
     path('manual/', views.registrar_asistencia, name='registrar_asistencia'),
-    
+
     # Sistema de QR por empleado (existente)
-    path('qr/', views.escanear_qr, name='escanear_qr'),
+    # Nota: NO exponemos una pantalla de "escanear"; el QR debe contener una URL y abrirse directo en el celular.
     path('qr/<str:codigo_qr>/', views.registrar_asistencia_qr, name='registrar_asistencia_qr'),
     path('api/buscar-empleado-qr/', views.api_buscar_empleado_qr, name='api_buscar_empleado_qr'),
 
