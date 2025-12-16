@@ -28,7 +28,7 @@ class QRService:
         codigo_qr = empleado.generar_codigo_qr()
         
         # URL que se codificará en el QR
-        base_url = os.getenv("APP_URL", "http://127.0.0.1:8000")
+        base_url = os.getenv("APP_URL", "https://web-production-0a494.up.railway.app")
         qr_url = f"{base_url}/qr/{codigo_qr}/"
         
         # Crear directorio si no existe
