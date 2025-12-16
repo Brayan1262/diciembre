@@ -63,6 +63,14 @@ DB_PORT=5432
 
 # --- Zona Horaria ---
 TIME_ZONE=America/Lima
+
+# --- URLs públicas (QR) ---
+# Base pública para construir URLs absolutas que se codifican en los QR.
+# Debe incluir https:// en producción.
+PUBLIC_BASE_URL=https://<tu-app>.up.railway.app
+
+# Ruta que abre el QR general generado por generar_qr.py (opcional)
+APP_ENTRY_PATH=/auto/
 ```
 
 > [!IMPORTANT]

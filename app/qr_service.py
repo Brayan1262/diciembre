@@ -8,6 +8,7 @@ import os
 from django.conf import settings
 from django.http import JsonResponse
 from .models import Empleado
+from .utils import build_public_url
 
 
 class QRService:
@@ -27,9 +28,8 @@ class QRService:
         # Generar código QR si no existe
         codigo_qr = empleado.generar_codigo_qr()
         
-        # URL que se codificará en el QR
-        base_url = os.getenv("APP_URL", "http://127.0.0.1:8000")
-        qr_url = f"{base_url}/qr/{codigo_qr}/"
+        # URL que se codificará en el QR (debe ser una URL pública absoluta para que el celular la abra)
+        qr_url = build_public_url(f"/qr/{codigo_qr}/")
         
         # Crear directorio si no existe
         qr_dir = os.path.join(settings.BASE_DIR, 'qr_codes')
@@ -127,5 +127,4 @@ class QRService:
             str: URL del QR
         """
         codigo_qr = empleado.generar_codigo_qr()
-        base_url = os.getenv("APP_URL", "http://127.0.0.1:8000")
-        return f"{base_url}/qr/{codigo_qr}/"
+        return build_public_url(f"/qr/{codigo_qr}/")
