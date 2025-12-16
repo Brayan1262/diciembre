@@ -15,6 +15,7 @@ empleados_data = [
     {"nombres": "Jose Angel", "apellidos": "Borda Hernandez"},
     {"nombres": "Valery", "apellidos": "Celestino Begar"},
     {"nombres": "Edwin", "apellidos": "Chaparro Ampa"},
+    {"nombres": "Alex", "apellidos": "Cusi Huamantica"},
     {"nombres": "Jose Alberto", "apellidos": "Davila Paredes"},
     {"nombres": "Jean Leonardo", "apellidos": "Estrada Roque"},
     {"nombres": "Marco Antonio Jose", "apellidos": "Garcia Galvan"},
