@@ -4,41 +4,7 @@ Funciones auxiliares que pueden ser reutilizadas.
 """
 
 from datetime import datetime, timedelta
-import os
 from django.utils import timezone
-
-
-def normalize_base_url(url: str) -> str:
-    """Normaliza una URL base para construir links públicos.
-
-    - Quita espacios
-    - Quita slash final
-    """
-    url = (url or "").strip()
-    return url.rstrip("/")
-
-
-def build_public_url(path: str, *, base_url: str | None = None) -> str:
-    """Construye una URL pública absoluta (ideal para codificar en un QR).
-
-    Prioridad de base_url:
-    1) parámetro base_url
-    2) env PUBLIC_BASE_URL
-    3) env APP_URL (compatibilidad)
-    4) http://127.0.0.1:8000 (dev)
-
-    Nota: Para que el celular abra el link al escanear, debe incluir esquema,
-    ej: https://...
-    """
-    base = base_url or os.getenv("PUBLIC_BASE_URL") or os.getenv("APP_URL") or "http://127.0.0.1:8000"
-    base = normalize_base_url(base)
-
-    # path debe empezar con '/'
-    path = (path or "/").strip()
-    if not path.startswith("/"):
-        path = "/" + path
-
-    return f"{base}{path}"
 
 
 def obtener_fecha_hora_actual():
