@@ -231,9 +231,19 @@ def escanear_qr(request):
 @ensure_csrf_cookie
 def identificar_dispositivo(request):
     """
-    Página de QR general: identifica por fingerprint. Si ya está vinculado, redirige directo al formulario.
-    Si no, muestra selector de empleado para vincular el dispositivo.
+    Página de QR general: identifica por fingerprint.
+
+    Nota: Para que el botón LISTO pueda cerrar la pestaña al final, el flujo debe abrirse
+    en una pestaña creada por JavaScript (window.open). Por eso, si no viene con ?opened=1,
+    mostramos una pantalla intermedia que abre la pestaña correcta.
     """
+    if request.method == 'GET' and request.GET.get('opened') != '1':
+        return render(request, 'abrir_registro.html', {
+            'titulo': 'Abrir registro',
+            'descripcion': 'Registro por dispositivo',
+            'target_url': reverse('identificar_dispositivo') + '?opened=1',
+        })
+
     empleados = Empleado.objects.order_by('apellidos', 'nombres')
     return render(request, 'identificar.html', { 'empleados': empleados })
 
@@ -251,7 +261,7 @@ def abrir_registro_qr(request, codigo_qr):
     return render(request, 'abrir_registro.html', {
         'titulo': 'Abrir registro',
         'descripcion': f"Empleado: {empleado.nombres} {empleado.apellidos}",
-        'target_url': reverse('registrar_asistencia_qr', kwargs={'codigo_qr': codigo_qr}),
+        'target_url': reverse('registrar_asistencia_qr', kwargs={'codigo_qr': codigo_qr}) + '?opened=1',
     })
 
 
@@ -260,7 +270,7 @@ def abrir_auto(request):
     return render(request, 'abrir_registro.html', {
         'titulo': 'Abrir registro',
         'descripcion': 'Registro por dispositivo',
-        'target_url': reverse('identificar_dispositivo'),
+        'target_url': reverse('identificar_dispositivo') + '?opened=1',
     })
 
 
@@ -268,7 +278,13 @@ def registrar_asistencia_qr(request, codigo_qr):
     """
     Vista para registrar asistencia usando código QR.
     Detecta automáticamente al empleado.
+
+    Nota: Si se entra directo (sin ?opened=1), redirigimos al launcher para que el
+    registro se abra en una pestaña creada por JS y así LISTO pueda cerrarla.
     """
+    if request.method == 'GET' and request.GET.get('opened') != '1':
+        return redirect('abrir_registro_qr', codigo_qr=codigo_qr)
+
     empleado = Empleado.buscar_por_codigo_qr(codigo_qr)
     
     if not empleado:
