@@ -28,6 +28,9 @@
             <p class="mb-3"><strong>Hora:</strong> {{ hora }}</p>
           </div>
           <button id="btn_listo" type="button" class="btn btn-cta">LISTO</button>
+          <p id="close_hint" class="small text-muted mt-3" style="display:none;">
+            Listo. Si esta página no se cierra automáticamente, puedes cerrar esta pestaña.
+          </p>
         </div>
       </div>
     </div>
@@ -37,20 +40,21 @@
 <script>
   (function () {
     const btn = document.getElementById('btn_listo');
+    const hint = document.getElementById('close_hint');
 
     function intentarCerrar() {
       // La mayoría de navegadores solo permiten window.close()
       // si la pestaña fue creada por JavaScript (ej. window.open).
       try {
+        // Algunos navegadores son más permisivos si primero navegamos a una página vacía.
         window.open('', '_self');
         window.close();
       } catch (_) {}
 
-      // Fallback silencioso: si no se pudo cerrar, dejamos una pestaña en blanco.
-      // (No hay forma segura de detectar si el close() fue permitido.)
+      // Fallback: mostrar mensaje para que el usuario cierre la pestaña
       setTimeout(() => {
-        window.location.href = 'about:blank';
-      }, 250);
+        if (hint) hint.style.display = 'block';
+      }, 200);
     }
 
     if (btn) btn.addEventListener('click', intentarCerrar);
