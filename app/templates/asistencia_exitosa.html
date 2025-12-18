@@ -43,14 +43,18 @@
     const hint = document.getElementById('close_hint');
 
     function intentarCerrar() {
-      // Nota: la mayoría de navegadores solo permiten window.close()
-      // si la pestaña fue abierta por JavaScript. Por eso ponemos fallback.
-      try { window.close(); } catch (_) {}
+      // La mayoría de navegadores solo permiten window.close()
+      // si la pestaña fue creada por JavaScript (ej. window.open).
+      try {
+        // Algunos navegadores son más permisivos si primero navegamos a una página vacía.
+        window.open('', '_self');
+        window.close();
+      } catch (_) {}
 
       // Fallback: mostrar mensaje para que el usuario cierre la pestaña
       setTimeout(() => {
         if (hint) hint.style.display = 'block';
-      }, 150);
+      }, 200);
     }
 
     if (btn) btn.addEventListener('click', intentarCerrar);

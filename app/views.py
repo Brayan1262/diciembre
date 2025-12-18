@@ -238,6 +238,32 @@ def identificar_dispositivo(request):
     return render(request, 'identificar.html', { 'empleados': empleados })
 
 
+def abrir_registro_qr(request, codigo_qr):
+    """Pantalla intermedia para abrir el registro en una pestaña creada por JS.
+
+    Esto permite que, al finalizar, el botón LISTO pueda cerrar la pestaña (window.close).
+    """
+    empleado = Empleado.buscar_por_codigo_qr(codigo_qr)
+    if not empleado:
+        messages.error(request, 'Código QR no válido o empleado no encontrado.')
+        return render(request, 'error_qr.html')
+
+    return render(request, 'abrir_registro.html', {
+        'titulo': 'Abrir registro',
+        'descripcion': f"Empleado: {empleado.nombres} {empleado.apellidos}",
+        'target_url': reverse('registrar_asistencia_qr', kwargs={'codigo_qr': codigo_qr}),
+    })
+
+
+def abrir_auto(request):
+    """Launcher para el QR general (/auto/)."""
+    return render(request, 'abrir_registro.html', {
+        'titulo': 'Abrir registro',
+        'descripcion': 'Registro por dispositivo',
+        'target_url': reverse('identificar_dispositivo'),
+    })
+
+
 def registrar_asistencia_qr(request, codigo_qr):
     """
     Vista para registrar asistencia usando código QR.

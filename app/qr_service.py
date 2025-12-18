@@ -28,8 +28,9 @@ class QRService:
         codigo_qr = empleado.generar_codigo_qr()
         
         # URL que se codificará en el QR
+        # Usamos un "launcher" (/abrir/) para que el registro se abra desde JS y luego pueda cerrarse con LISTO.
         base_url = os.getenv("APP_URL", "https://web-production-0a494.up.railway.app")
-        qr_url = f"{base_url}/qr/{codigo_qr}/"
+        qr_url = f"{base_url.rstrip('/')}/qr/{codigo_qr}/abrir/"
         
         # Crear directorio si no existe
         qr_dir = os.path.join(settings.BASE_DIR, 'qr_codes')
@@ -128,4 +129,4 @@ class QRService:
         """
         codigo_qr = empleado.generar_codigo_qr()
         base_url = os.getenv("APP_URL", "http://127.0.0.1:8000")
-        return f"{base_url}/qr/{codigo_qr}/"
+        return f"{base_url.rstrip('/')}/qr/{codigo_qr}/abrir/"

@@ -8,7 +8,8 @@ import qrcode
 BASE_URL = os.getenv("APP_URL", "https://web-production-0a494.up.railway.app/")
 
 # Ruta de destino del formulario de asistencia (por defecto QR general)
-DEST_PATH = os.getenv("APP_ENTRY_PATH", "/auto/")
+# Nota: /auto/abrir/ es un "launcher" que abre el flujo en una pestaña creada por JS.
+DEST_PATH = os.getenv("APP_ENTRY_PATH", "/auto/abrir/")
 
 url = f"{BASE_URL.rstrip('/')}{DEST_PATH}"
 

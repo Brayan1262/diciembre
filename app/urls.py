@@ -13,10 +13,13 @@ urlpatterns = [
     
     # Sistema de QR por empleado (existente)
     path('qr/', views.escanear_qr, name='escanear_qr'),
+    # "Launcher" para abrir en una pestaña creada por JS (así window.close() funciona al final)
+    path('qr/<str:codigo_qr>/abrir/', views.abrir_registro_qr, name='abrir_registro_qr'),
     path('qr/<str:codigo_qr>/', views.registrar_asistencia_qr, name='registrar_asistencia_qr'),
     path('api/buscar-empleado-qr/', views.api_buscar_empleado_qr, name='api_buscar_empleado_qr'),
 
     # QR general: auto-identificación por dispositivo
+    path('auto/abrir/', views.abrir_auto, name='abrir_auto'),
     path('auto/', views.identificar_dispositivo, name='identificar_dispositivo'),
     path('auto/empleado/<int:empleado_id>/', views.registrar_asistencia_auto, name='registrar_asistencia_auto'),
     path('api/identificar-fingerprint/', views.api_identificar_por_fingerprint, name='api_identificar_por_fingerprint'),
