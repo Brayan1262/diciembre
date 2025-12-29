@@ -17,7 +17,7 @@
 <div class="card p-4 mt-4 text-center">
 <div class="brand-bar"><span class="brand-pill"><img src="{% static 'img/logo-calidad.svg' %}" alt="Nakama">NAKAMA</span></div>
           <div class="card-body pt-0">
-            <small id="estado" class="text-muted d-block mb-3">Selecciona tu nombre para continuar.</small>
+            <small id="estado" class="text-muted d-block mb-3"></small>
 
             <!-- Selección de empleado: oculta por defecto; se muestra solo si no te reconoce o eliges "No soy yo" -->
             <form id="form-vincular" class="text-start" style="display: none;">
@@ -98,7 +98,7 @@
           return;
         }
       } catch(_) { /* ignorar */ }
-      setEstado('Selecciona tu nombre para continuar.', 'secondary');
+      setEstado('', 'secondary');
       mostrarFormulario();
     }
 
@@ -110,7 +110,7 @@
           body: JSON.stringify({ fingerprint: visitorId })
         });
       }catch(_){ }
-      setEstado('Selecciona tu nombre para continuar.', 'secondary');
+      setEstado('', 'secondary');
       mostrarFormulario();
     }
 
